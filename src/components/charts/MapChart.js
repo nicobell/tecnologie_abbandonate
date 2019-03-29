@@ -1,110 +1,121 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import * as d3 from 'd3'
-import * as d3geop from 'd3-geo-projection';
-import * as d3geo from 'd3-geo';
-import * as tjson from 'topojson';
-import PropTypes from 'prop-types'
-import Math from 'math'
+import React, { Component } from 'react';
+import { ComposableMap,
+  ZoomableGroup,
+  Geographies,
+  Geography,
+  Markers,
+  Marker } from 'react-simple-maps';
 
-const data = [
-  {
-    city: 'zanzibar',
-    lat: -6.13,
-    lon: 39.31
-  },
-  {
-    city: 'tokyo',
-    lat: 35.68,
-    lon: 139.76
-  },
-  {
-    city: 'toronto',
-    lat: 43.64,
-    lon: -79.40
-  }
+const wrapperStyles = {
+  width: "100%",
+  maxWidth: 980,
+  margin: "0 auto",
+}
+
+const include = [
+  "ARG", "BOL", "BRA", "CHL", "COL", "ECU",
+  "GUY", "PRY", "PER", "SUR", "URY", "VEN",
+  "ITA", "ESP", "DEU"
 ]
 
-class MapChart extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {
-      }
-      this.buildGraph = this.buildGraph.bind(this);
-  }
+const markers = [
+  { markerOffset: -25, name: "Buenos Aires", coordinates: [-58.3816, -34.6037], start: 1990, finish: 2010, category: 'music'},
+  { markerOffset: 35, name: "Brasilia", coordinates: [-47.8825, -15.7942], start: 1989, finish: 2010, category: 'video' },
+  { markerOffset: 35, name: "Bogota", coordinates: [-74.0721, 4.7110], start: 2000, finish: 2019, category: 'music' },
+  { markerOffset: -25, name: "Caracas", coordinates: [-66.9036, 10.4806], start: 1950, finish: 2006, category: 'photo' },
+  { markerOffset: 20, name: "Rome", coordinates: [12.3959121, 41.9102415], start: 1977, finish: 2012, category: 'photo' },
+  { markerOffset: 20, name: "Berlino", coordinates: [13.1445474, 52.5069312], start: 1930, finish: 1990, category: 'photo' },
+  { markerOffset: 20, name: "Madrid", coordinates: [-3.8196207, 40.4378698], start: 1967, finish: 2003, category: 'music' }
+]
 
-  buildGraph() {
-    var svg = d3.select(".mapchart");
-    var margin = {top: 30, right: 30, bottom: 30, left: 30};
-    var width = +svg.attr("width") - margin.left - margin.right;
-    var height = +svg.attr("height") - margin.top - margin.bottom;
-
-    var projection = d3geo.geoMercator()
-      .center([0, 5 ])
-      .scale(200)
-      .rotate([-180,0]);
-
-    var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var path = d3geo.geoPath()
-      .projection(projection);
-
-    console.log("here");
-
-    d3.json('world-110m2.json', function(error, topology) {
-      data.map(d => {
-        console.log(d);
-        g.selectAll("circle")
-          .data(data)
-          .enter()
-          .append("a")
-  				  .attr("xlink:href", function(d) {
-  					  return "https://www.google.com/search?q="+d.city;}
-  				  )
-          .append("circle")
-          .attr("cx", function(d) {
-            return projection([d.lon, d.lat])[0];
-          })
-          .attr("cy", function(d) {
-            return projection([d.lon, d.lat])[1];
-          })
-          .attr("r", 5)
-          .style("fill", "red");
-      });
-
-      g.selectAll("path")
-        .data(tjson.feature(topology, topology.objects.countries)
-          .geometries)
-        .enter()
-        .append("path")
-        .attr("d", path)
-
-    });
-
-  }
-
-  componentDidMount() {
-    this.buildGraph()
-  }
-
+class MapChart extends Component {
   render() {
     return (
-      <div>
-        <hr />
-        <svg className="mapchart" width="90%" height="500"> </svg>
-        <hr />
+      <div style={wrapperStyles}>
+        <ComposableMap
+          projectionConfig={{ scale: 150 }}
+          width={700}
+          height={400}
+          style={{
+            width: "90%",
+            height: "auto",
+          }}
+          >
+          <ZoomableGroup disablePanning>
+            <Geographies geography="/world-50m.json">
+              {(geographies, projection) =>
+                geographies.map((geography, i) =>
+                  geography.id !== "ATA" && (
+                    <Geography
+                      key={i}
+                      geography={geography}
+                      projection={projection}
+                      style={{
+                        default: {
+                          fill: "#ECEFF1",
+                          stroke: "#607D8B",
+                          strokeWidth: 0.75,
+                          outline: "none",
+                        },
+                        hover: {
+                          fill: "#CFD8DC",
+                          stroke: "#607D8B",
+                          strokeWidth: 0.75,
+                          outline: "none",
+                        },
+                        pressed: {
+                          fill: "#FF5722",
+                          stroke: "#607D8B",
+                          strokeWidth: 0.75,
+                          outline: "none",
+                        },
+                      }}
+                    />
+                  )
+                )
+              }
+            </Geographies>
+            <Markers>
+              {markers.map((marker, i) => (marker.start >= this.props.selection.start) &&
+                 (marker.start <= this.props.selection.finish) &&
+                 (this.props.selection.category === 'all' || marker.category === this.props.selection.category ) && (
+                <Marker
+                  key={i}
+                  marker={marker}
+                  style={{
+                    default: { fill: "#FF5722" },
+                    hover: { fill: "#FFFFFF" },
+                    pressed: { fill: "#FF5722" },
+                  }}
+                  >
+                  <circle
+                    cx={0}
+                    cy={0}
+                    r={5}
+                    style={{
+                      stroke: "#FF5722",
+                      strokeWidth: 2,
+                      opacity: 0.9,
+                    }}
+                  />
+                  <text
+                    textAnchor="middle"
+                    y={20}
+                    style={{
+                      fontFamily: "Roboto, sans-serif",
+                      fill: "#607D8B",
+                    }}
+                    >
+                    {marker.name}
+                  </text>
+                </Marker>
+              ))}
+            </Markers>
+          </ZoomableGroup>
+        </ComposableMap>
       </div>
     )
   }
 }
 
-MapChart.propTypes = {
-}
-
-const mapStateToProps = state => ({
-})
-
-const mapDispatchToProps = dispatch => ({
-})
-
-export default connect (mapStateToProps, mapDispatchToProps)(MapChart)
+export default MapChart;

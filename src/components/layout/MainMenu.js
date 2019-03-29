@@ -2,10 +2,16 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
 
+//Menu principale con diversi tab per selezonare una pagina
+//A seconda del pathname (fornito dal BrowserRouter) capisce la pagina selezionata
+//e rende attiva una tab
+
 class MainMenu extends React.Component {
 
   render() {
+
     const {pathname} = this.props.location;
+
     return (
       <React.Fragment>
         <Menu stackable style={{width: '100%'}}>

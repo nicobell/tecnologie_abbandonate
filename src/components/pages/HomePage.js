@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'semantic-ui-react';
-import MainMenu from '../layout/MainMenu';
 
+//Contenuto HomePage da inserire
 class HomePage extends React.Component {
   render() {
     return (
       <div>
-        <MainMenu location={this.props.location} />
+        HOMEPAGE
       </div>
     )
   }

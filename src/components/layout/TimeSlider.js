@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
-import Slider from 'rc-slider';
+import Slider, { Range, Handle } from 'rc-slider';
 import Tooltip from 'rc-tooltip';
 import 'rc-slider/assets/index.css';
 
-const createSliderWithTooltip = Slider.createSliderWithTooltip;
-const Range = createSliderWithTooltip(Slider.Range);
-const Handle = Slider.Handle;
+//const createSliderWithTooltip = Slider.createSliderWithTooltip;
+//const Range = Slider.createSliderWithTooltip(Slider.Range);
+//const Handle = Slider.Handle;
 
-const handle = (props) => {
-  const { value, dragging, index, ...restProps } = props;
+const handle = () => {
   return (
     <Tooltip
       prefixCls="rc-slider-tooltip"
-      placement="top"
-    >
+      placement="top" >
       <Handle  />
     </Tooltip>
   );
 };
 
+//Filtro per tempo, che prende come parametri le proprietà passate dal componente superiore
+//Cambia il filtro del tempo con l'azione passata
 class TimeSlider extends Component {
   constructor(props) {
     super(props);

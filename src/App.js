@@ -10,24 +10,15 @@ import HomePage from './components/pages/HomePage';
 import WorldMap from './components/pages/WorldMap';
 import TimeLine from './components/pages/TimeLine';
 import Contacts from './components/pages/Contacts';
+import MainMenu from './components/layout/MainMenu';
 
+//Wrapper principale dell'applicazione
+//Renderizza le diverse sezioni a seconda della voce del menu selezionata
 class App extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      start: 1900,
-      finish: 2019,
-      value: [1990, 2010]
-    }
-  }
-
-  componentWillUpdate() {
-    console.log(this.props.location);
-  }
 
   render() {
     return (
+      //Collegamento allo store.js per comunicazioni back-end (se serviranno)
       <Provider store={store}>
 
         <div className="App">
@@ -37,8 +28,10 @@ class App extends Component {
         </div>
 
         <Container>
+
           <BrowserRouter>
-            <Route path="/" component={HomePage} location={this.props.location} />
+            <Route path="/" component={MainMenu} location={this.props.location} />
+            <Route path="/" exact component={HomePage} location={this.props.location} />
             <Route path="/map" component={WorldMap} location={this.props.location}/>
             <Route path="/contacts" component={Contacts} location={this.props.location}/>
             <Route path="/posts" component={PostPage} location={this.props.location}/>
